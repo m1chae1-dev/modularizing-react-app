@@ -7,9 +7,9 @@ interface Props {
     amount: number
 }
 
-const Payment: React.FC<Props> = ({ amount }) => {
+const usePaymentMethods = () => {
     const [paymentMethods, setPaymentMethods] = useState<LocalPaymentMethod[]>([])
-    
+
     useEffect(() => {
         const fetchPaymentMethods = async () => {
             const url = "https://dummyjson.com/users"
@@ -18,7 +18,6 @@ const Payment: React.FC<Props> = ({ amount }) => {
             const methods: RemotePaymentMethod = await response.json()
 
             if (methods.users.length > 0) {
-                // console.log(methods)
                 const extended: LocalPaymentMethod[] = methods.users.map((method) => ({
                     provider: method.bank.cardType,
                     label: `Pay with ${method.bank.cardType}`,
@@ -34,6 +33,15 @@ const Payment: React.FC<Props> = ({ amount }) => {
 
         fetchPaymentMethods()
     }, [])
+
+    return {
+        paymentMethods
+    }
+}
+
+const Payment: React.FC<Props> = ({ amount }) => {
+    const { paymentMethods } = usePaymentMethods()
+
     return (
         <div>
             <div className='payment_product_container'>
@@ -64,7 +72,7 @@ const Payment: React.FC<Props> = ({ amount }) => {
                 </div>
                 <hr />
                 <button className='payment_btn'>${amount}</button>
-        </div>
+            </div>
         </div>
     )
 }
